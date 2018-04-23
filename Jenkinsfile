@@ -21,6 +21,16 @@ node {
         
         
         sh 'make publish'
+
+        stage 'Deploy release'
+        sh "printf \$(git rev-parse --shot HEAD) > tag.tmp"
+        def imageTag = readFile 'tag.tmp'
+        build job: DEPLOY_JOB, parameters: [[
+            $class: 'StringParameterValue',
+            name: 'IMAGE_TAG',
+            value: 'poweriser/todobackend:' + imageTag
+        ]]
+
         
     }
     finally{
